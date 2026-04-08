@@ -1,39 +1,49 @@
 # inference.py
+from flask import Flask, jsonify, request
+import yaml
 
-from env.environment import ReturnEnv
-from tasks.easy import get_easy_task
-# If you have medium/hard tasks, you can import them too
-# from tasks.medium import get_medium_task
-# from tasks.hard import get_hard_task
+app = Flask(__name__)
 
-# Load customers for easy task (replace with medium/hard if needed)
-customers = get_easy_task()
+# Load config
+with open("openenv.yaml", "r") as f:
+    config = yaml.safe_load(f)
 
-# Initialize environment
-env = ReturnEnv(customers)
+def get_sample_state():
+    return {
+        "customer_id": 101,
+        "return_reason": "damaged",
+        "order_value": 1500,
+        "return_count": 3,
+        "days_since_purchase": 45
+    }
 
-state = env.reset()
-done = False
-cumulative_reward = 0
+@app.route("/reset", methods=["POST"])
+def reset():
+    state = get_sample_state()
+    return jsonify({"state": state})
 
-# Start of portal-compliant inference
-print("[START] Inference")
-
-while not done:
-    # Simple baseline: flag if return_rate > 0.6
-    action = 1 if state.return_rate > 0.6 else 0
+@app.route("/step", methods=["POST"])
+def step():
+    data = request.json
+    action = data.get("action")
     
-    # Step the environment
-    next_state, reward, done, _ = env.step(action)
+    rewards = config.get("rewards", {})
+    if action == "flag":
+        reward = rewards.get("correct_flag", 1.0)
+    elif action == "approve":
+        reward = rewards.get("missed_abuse", -1.0)
+    else:
+        reward = rewards.get("wrong_flag", -0.5)
     
-    # Update cumulative reward
-    cumulative_reward += reward
-    
-    # Portal-compliant structured log
-    print(f"[STEP] CustomerID={state.customer_id} Action={action} Reward={reward} Cumulative={cumulative_reward}")
-    
-    # Move to next state
-    state = next_state
+    return jsonify({
+        "reward": reward,
+        "done": True,
+        "state": get_sample_state()
+    })
 
-# End of inference
-print("[END] Inference ✅")
+@app.route("/validate", methods=["GET"])
+def validate():
+    return jsonify({"status": "ok"})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=7860)
