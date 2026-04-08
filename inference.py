@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 import yaml
 
 app = Flask(__name__)
@@ -16,39 +16,40 @@ def get_sample_state():
         "days_since_purchase": 45
     }
 
-# RESET API (POST)
+# RESET (IMPORTANT FIX)
 @app.route("/reset", methods=["POST"])
 def reset():
-    state = get_sample_state()
     return jsonify({
-        "state": state
-    })
+        "state": get_sample_state(),
+        "info": {}
+    }), 200
 
-# STEP API (POST)
+# STEP (IMPORTANT FIX)
 @app.route("/step", methods=["POST"])
 def step():
-    data = request.json
-    action = data.get("action")  # integer expected (0,1,2)
+    data = request.get_json(force=True)
+    action = data.get("action", 0)
 
     rewards = config.get("rewards", {})
 
-    if action == 1:  # FLAG
+    if action == 1:
         reward = rewards.get("correct_flag", 1.0)
-    elif action == 0:  # APPROVE
+    elif action == 0:
         reward = rewards.get("missed_abuse", -1.0)
-    else:  # INVESTIGATE
+    else:
         reward = rewards.get("wrong_flag", -0.5)
 
     return jsonify({
         "state": get_sample_state(),
         "reward": reward,
-        "done": True
-    })
+        "done": True,
+        "info": {}
+    }), 200
 
-# VALIDATION CHECK
-@app.route("/validate", methods=["GET"])
-def validate():
-    return jsonify({"status": "ok"})
+# HEALTH CHECK
+@app.route("/", methods=["GET"])
+def home():
+    return "OK", 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=7860)
