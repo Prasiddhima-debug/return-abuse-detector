@@ -1,0 +1,13 @@
+environment:
+  name: ReturnAbuseEnv
+  version: 1.0
+
+actions:
+  - approve
+  - flag
+  - reject
+
+rewards:
+  correct_flag: 1.0
+  wrong_flag: -0.5
+  missed_abuse: -1.0
