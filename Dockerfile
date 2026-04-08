@@ -1,10 +1,9 @@
-FROM python:3.10-slim
+FROM python:3.10
 
 WORKDIR /app
 
-COPY . /app
+COPY . .
 
-RUN pip install --upgrade pip
-RUN pip install flask==3.1.2 pyyaml==6.0.3 pydantic==2.12.5
+RUN pip install -r requirements.txt
 
-CMD ["python", "inference.py"]
+CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "7860"]
