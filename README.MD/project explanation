@@ -1,0 +1,109 @@
+# Return Abuse Detector using Reinforcement Learning
+
+## Abstract
+
+E-commerce platforms often incur significant losses due to fraudulent or excessive product returns. This project presents a Reinforcement Learning (RL)-based system designed to simulate and identify return abuse behavior among customers. The system models customer activity and applies intelligent decision-making to classify users based on risk.
+
+---
+
+## Objectives
+
+* To detect abnormal return behavior in customers
+* To simulate real-world e-commerce return scenarios
+* To apply Reinforcement Learning for decision-making
+* To provide an interactive interface for analysis
+
+---
+
+## Methodology
+
+### Environment Simulation
+
+A custom simulation environment is developed to represent customer data, including:
+
+* Return rate
+* Account age
+* Total number of orders
+* Total number of returns
+
+### Reinforcement Learning Agent
+
+An RL agent is implemented to interact with the environment and learn behavioral patterns. The approach includes:
+
+* State representation based on customer attributes
+* Action selection (flag or not flag a customer)
+* Reward mechanism based on classification accuracy
+
+### Decision Output
+
+The system produces:
+
+* Customer details
+* Risk classification (Low, Medium, High)
+
+---
+
+## Technology Stack
+
+* Programming Language: Python
+* Approach: Reinforcement Learning (custom implementation)
+* Interface: Gradio
+* Deployment: Hugging Face Spaces
+
+---
+
+## Project Structure
+
+```
+.
+├── app.py                # Main interface (Gradio UI)
+├── rl_agent.py           # RL agent logic
+├── rl_agent_train.py     # Training script
+├── tasks/
+│   └── easy.py           # Sample environment
+├── env/
+│   └── models.py         # Customer model
+├── README.md             # Project documentation
+```
+
+---
+
+## Working Flow
+
+1. Customer data is generated or simulated
+2. Data is passed to the RL agent
+3. The agent evaluates return behavior
+4. Customers are classified based on risk level
+5. Results are displayed through the user interface
+
+---
+
+## Sample Output
+
+* Customer ID: 1
+* Return Rate: 0.8
+* Risk Level: High
+
+---
+
+## Future Scope
+
+* Integration with real-world datasets
+* Implementation of advanced RL algorithms such as DQN and PPO
+* Development of a visualization dashboard
+* Deployment of a scalable API-based backend
+
+---
+
+## Applications
+
+* E-commerce fraud detection
+* Customer behavior analysis
+* Risk assessment systems
+
+---
+
+## Author
+
+Prasiddhima Raikwar 
+B.Tech in Artificial Intelligence and Machine Learning
