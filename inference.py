@@ -1,4 +1,3 @@
-# inference.py
 from flask import Flask, jsonify, request
 import yaml
 
@@ -17,30 +16,36 @@ def get_sample_state():
         "days_since_purchase": 45
     }
 
+# RESET API (POST)
 @app.route("/reset", methods=["POST"])
 def reset():
     state = get_sample_state()
-    return jsonify({"state": state})
+    return jsonify({
+        "state": state
+    })
 
+# STEP API (POST)
 @app.route("/step", methods=["POST"])
 def step():
     data = request.json
-    action = data.get("action")
-    
+    action = data.get("action")  # integer expected (0,1,2)
+
     rewards = config.get("rewards", {})
-    if action == "flag":
+
+    if action == 1:  # FLAG
         reward = rewards.get("correct_flag", 1.0)
-    elif action == "approve":
+    elif action == 0:  # APPROVE
         reward = rewards.get("missed_abuse", -1.0)
-    else:
+    else:  # INVESTIGATE
         reward = rewards.get("wrong_flag", -0.5)
-    
+
     return jsonify({
+        "state": get_sample_state(),
         "reward": reward,
-        "done": True,
-        "state": get_sample_state()
+        "done": True
     })
 
+# VALIDATION CHECK
 @app.route("/validate", methods=["GET"])
 def validate():
     return jsonify({"status": "ok"})
